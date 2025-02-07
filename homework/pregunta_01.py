@@ -4,7 +4,9 @@
 """
 Escriba el codigo que ejecute la accion solicitada en cada pregunta.
 """
-
+import pandas as pd
+import zipfile
+import os
 
 def pregunta_01():
     """
@@ -71,3 +73,48 @@ def pregunta_01():
 
 
     """
+    def extraer_zip(ruta_zip,ruta_salida):
+        with zipfile.ZipFile(ruta_zip, 'r') as zip_ref:
+            zip_ref.extractall(ruta_salida)
+
+    def procesar_archivos(ruta_input):
+        dataset_test = []
+        dataset_train = []
+        carpetas = ["test","train"]
+        sentimientos = ["negative","neutral","positive"]
+
+        for carpeta in carpetas:
+
+            for sentimiento in sentimientos:
+
+                ruta = f"{ruta_input}/{carpeta}/{sentimiento}"
+                for archivo in os.listdir(ruta):
+
+                    with open(f"{ruta}/{archivo}") as file: 
+                        linea = file.read()
+                        informacion = {"phrase":linea,"target":sentimiento}
+
+                        if carpeta == "test":
+                            dataset_test.append(informacion)
+                        else:
+                            dataset_train.append(informacion)
+
+        return dataset_test,dataset_train
+    
+    def guardar_archivos(dataset, ruta_salida):
+        df = pd.DataFrame(dataset)
+        print(df["target"].value_counts())
+        df.to_csv(ruta_salida)
+
+    dataset_test = []
+    dataset_train = []
+    ruta_input = "files/input/input/input"
+    ruta_salida = "files/output"
+
+    extraer_zip("files/input.zip",ruta_input)
+    dataset_test,dataset_train = procesar_archivos(ruta_input)
+    guardar_archivos(dataset_test, f"{ruta_salida}/test_dataset.csv")
+    guardar_archivos(dataset_train, f"{ruta_salida}/train_dataset.csv")
+
+if __name__ == '__main__':
+    pregunta_01()
