@@ -1,6 +1,4 @@
 .DS_Store
-# Archivos Extraidos
-input/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
